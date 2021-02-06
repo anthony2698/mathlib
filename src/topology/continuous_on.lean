@@ -32,12 +32,6 @@ open_locale topological_space filter
 variables {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 variables [topological_space α]
 
-/-- The "neighborhood within" filter. Elements of `𝓝[s] a` are sets containing the
-intersection of `s` and a neighborhood of `a`. -/
-def nhds_within (a : α) (s : set α) : filter α := 𝓝 a ⊓ 𝓟 s
-
-localized "notation `𝓝[` s `] ` x:100 := nhds_within x s" in topological_space
-
 @[simp] lemma nhds_bind_nhds_within {a : α} {s : set α} :
   (𝓝 a).bind (λ x, 𝓝[s] x) = 𝓝[s] a :=
 bind_inf_principal.trans $ congr_arg2 _ nhds_bind_nhds rfl
@@ -203,8 +197,7 @@ theorem tendsto_if_nhds_within {f g : α → β} {p : α → Prop} [decidable_pr
 by apply tendsto_if; rw [←nhds_within_inter']; assumption
 
 lemma map_nhds_within (f : α → β) (a : α) (s : set α) :
-  map f (𝓝[s] a) =
-    ⨅ t ∈ {t : set α | a ∈ t ∧ is_open t}, 𝓟 (set.image f (t ∩ s)) :=
+  map f (𝓝[s] a) = ⨅ t ∈ {t : set α | a ∈ t ∧ is_open t}, 𝓟 (f  '' (t ∩ s)) :=
 ((nhds_within_basis_open a s).map f).eq_binfi
 
 theorem tendsto_nhds_within_mono_left {f : α → β} {a : α}

@@ -79,8 +79,8 @@ open_locale classical
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 lemma pi_eq_sum_univ {ι : Type u} [fintype ι] {R : Type v} [semiring R] (x : ι → R) :
-  x = ∑ i, x i • (λj, if i = j then 1 else 0) :=
-by { ext, simp }
+  x = ∑ i, x i • pi.single i 1 :=
+by { ext, simp [pi.single, update_apply] }
 
 end
 
@@ -224,17 +224,13 @@ instance : monoid (M →ₗ[R] M) :=
 by refine {mul := (*), one := 1, ..}; { intros, apply linear_map.ext, simp {proj := ff} }
 
 section
-open_locale classical
 
-/-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
-of the canonical basis. -/
-lemma pi_apply_eq_sum_univ [fintype ι] (f : (ι → R) →ₗ[R] M) (x : ι → R) :
-  f x = ∑ i, x i • (f (λj, if i = j then 1 else 0)) :=
-begin
-  conv_lhs { rw [pi_eq_sum_univ x, f.map_sum] },
-  apply finset.sum_congr rfl (λl hl, _),
-  rw f.map_smul
-end
+variables [fintype ι] [decidable_eq ι] {M' : ι → Type*} [Π i, add_comm_monoid (M' i)]
+  [Π i, semimodule R (M' i)]
+
+lemma pi_ext_left {f g : (Π i, M' i) →ₗ[R] M} (h : ∀ i x, f (pi.single i x) = g (pi.single i x)) :
+  f = g :=
+to_add_monoid_hom_injective $ add_monoid_hom.functions_ext _ _ _ h
 
 end
 
@@ -2559,7 +2555,7 @@ variable [decidable_eq ι]
 
 /-- `diag i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
 def diag (i j : ι) : φ i →ₗ[R] φ j :=
-@function.update ι (λj, φ i →ₗ[R] φ j) _ 0 i id j
+@pi.single ι (λ j, φ i →ₗ[R] φ j) _ _ i id j
 
 lemma update_apply (f : Πi, M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
   (update f i b j) c = update (λi, f i c) i (b c) j :=
@@ -2568,6 +2564,9 @@ begin
   { rw [h, update_same, update_same] },
   { rw [update_noteq h, update_noteq h] }
 end
+
+lemma diag_apply (i j : ι) (x : φ i) : (diag i j : φ i →ₗ[R] φ j) x = pi.single i x j :=
+update_apply _ _ _ _ _
 
 end
 

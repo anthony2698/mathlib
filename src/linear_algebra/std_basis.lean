@@ -25,14 +25,14 @@ variables (R : Type*) {ι : Type*} [semiring R] (φ : ι → Type*)
 /-- The standard basis of the product of `φ`. -/
 def std_basis (i : ι) : φ i →ₗ[R] (Πi, φ i) := pi (diag i)
 
-lemma std_basis_apply (i : ι) (b : φ i) : std_basis R φ i b = update 0 i b :=
-by ext j; rw [std_basis, pi_apply, diag, update_apply]; refl
+lemma std_basis_apply (i : ι) (b : φ i) : std_basis R φ i b = pi.single i b :=
+by { ext j, rw [std_basis, pi_apply, diag_apply] }
 
 @[simp] lemma std_basis_same (i : ι) (b : φ i) : std_basis R φ i b i = b :=
-by rw [std_basis_apply, update_same]
+by rw [std_basis_apply, pi.single_eq_same]
 
 lemma std_basis_ne (i j : ι) (h : j ≠ i) (b : φ i) : std_basis R φ i b j = 0 :=
-by rw [std_basis_apply, update_noteq h]; refl
+by rw [std_basis_apply, pi.single_eq_of_ne h]
 
 lemma ker_std_basis (i : ι) : ker (std_basis R φ i) = ⊥ :=
 ker_eq_bot_of_injective $ assume f g hfg,
@@ -116,10 +116,13 @@ lemma std_basis_eq_single {a : R} :
   (λ (i : ι), (std_basis R (λ _ : ι, R) i) a) = λ (i : ι), (finsupp.single i a) :=
 begin
   ext i j,
-  rw [std_basis_apply, finsupp.single_apply],
-  split_ifs,
-  { rw [h, function.update_same] },
-  { rw [function.update_noteq (ne.symm h)], refl },
+  rw [std_basis_apply, finsupp.single_eq_update, pi.single],
+  congr -- `finsupp.single_eq_update` uses classecal `decidable_eq`
 end
+
+@[ext] lemma pi_ext_left' [fintype ι] {M : Type*} [add_comm_monoid M] [semimodule R M]
+  {f g : (Π i, φ i) →ₗ[R] M} (h : ∀ i, f.comp (std_basis R φ i) = g.comp (std_basis R φ i)) :
+  f = g :=
+pi_ext_left $ λ i x, by simpa only [std_basis_apply, comp_apply] using linear_map.congr_fun (h i) x
 
 end linear_map
