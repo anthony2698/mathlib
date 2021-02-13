@@ -80,8 +80,8 @@ open_locale classical
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 lemma pi_eq_sum_univ {ι : Type u} [fintype ι] {R : Type v} [semiring R] (x : ι → R) :
-  x = ∑ i, x i • pi.single i 1 :=
-by { ext, simp [pi.single, update_apply] }
+  x = ∑ i, x i • (λj, if i = j then 1 else 0) :=
+by { ext, simp }
 
 end
 
@@ -225,13 +225,17 @@ instance : monoid (M →ₗ[R] M) :=
 by refine {mul := (*), one := 1, ..}; { intros, apply linear_map.ext, simp {proj := ff} }
 
 section
+open_locale classical
 
-variables [fintype ι] [decidable_eq ι] {M' : ι → Type*} [Π i, add_comm_monoid (M' i)]
-  [Π i, semimodule R (M' i)]
-
-lemma pi_ext_left {f g : (Π i, M' i) →ₗ[R] M} (h : ∀ i x, f (pi.single i x) = g (pi.single i x)) :
-  f = g :=
-to_add_monoid_hom_injective $ add_monoid_hom.functions_ext _ _ _ h
+/-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
+of the canonical basis. -/
+lemma pi_apply_eq_sum_univ [fintype ι] (f : (ι → R) →ₗ[R] M) (x : ι → R) :
+  f x = ∑ i, x i • (f (λj, if i = j then 1 else 0)) :=
+begin
+  conv_lhs { rw [pi_eq_sum_univ x, f.map_sum] },
+  apply finset.sum_congr rfl (λl hl, _),
+  rw f.map_smul
+end
 
 end
 
