@@ -72,12 +72,12 @@ begin
   apply w,
 end
 
-@[ext]
-lemma add_monoid_hom.functions_ext' [fintype I] (M : Type*) [add_comm_monoid M]
+@[ext] lemma add_monoid_hom.functions_ext' [fintype I] (M : Type*) [add_comm_monoid M]
   (g h : (Π i, Z i) →+ M)
   (H : ∀ i, g.comp (add_monoid_hom.single Z i) = h.comp (add_monoid_hom.single Z i)) :
   g = h :=
-g.functions_ext M h $ λ i x, by convert add_monoid_hom.congr_fun (H i) x
+have _ := λ i, add_monoid_hom.congr_fun (H i), -- elab without an expected type
+g.functions_ext M h this
 
 end single
 
@@ -86,8 +86,7 @@ open pi
 variables {I : Type*} [decidable_eq I] {f : I → Type*}
 variables [Π i, semiring (f i)]
 
-@[ext]
-lemma ring_hom.functions_ext [fintype I] (G : Type*) [semiring G] (g h : (Π i, f i) →+* G)
+@[ext] lemma ring_hom.functions_ext [fintype I] (G : Type*) [semiring G] (g h : (Π i, f i) →+* G)
   (w : ∀ (i : I) (x : f i), g (single i x) = h (single i x)) : g = h :=
 ring_hom.coe_add_monoid_hom_injective $
  add_monoid_hom.functions_ext G (g : (Π i, f i) →+ G) h w
