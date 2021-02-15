@@ -55,7 +55,7 @@ by rw [std_basis_apply, update_noteq h]; refl
 
 section ext
 
-variables {R φ} {M : Type*} [fintype ι] [add_comm_monoid M] [semimodule R M]
+variables {R φ} {M M' : Type*} [fintype ι] [add_comm_monoid M] [semimodule R M]
   {f g : (Π i, φ i) →ₗ[R] M}
 
 lemma pi_ext (h : ∀ i x, f (pi.single i x) = g (pi.single i x)) :
@@ -70,6 +70,9 @@ begin
   refine pi_ext (λ i x, _),
   simpa only [comp_apply, coe_std_basis] using linear_map.congr_fun (h i) x
 end
+
+lemma pi_ext'_iff : f = g ↔ ∀ i, f.comp (std_basis R φ i) = g.comp (std_basis R φ i) :=
+⟨λ h i, h ▸ rfl, pi_ext'⟩
 
 end ext
 
