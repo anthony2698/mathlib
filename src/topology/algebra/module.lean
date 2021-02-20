@@ -793,6 +793,21 @@ lemma smul_apply : (c • f) x = c • (f x) := rfl
 @[simp] lemma comp_smul [linear_map.compatible_smul M₂ M₃ S R] : h.comp (c • f) = c • (h.comp f) :=
 by { ext x, exact h.map_smul_of_tower c (f x) }
 
+/-- `continuous_linear_map.prod` as an `equiv`. -/
+@[simps apply] def prod_equiv : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ (M →L[R] M₂ × M₃) :=
+{ to_fun := λ f, f.1.prod f.2,
+  inv_fun := λ f, ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩,
+  left_inv := λ f, by ext; refl,
+  right_inv := λ f, by ext; refl }
+
+lemma prod_ext_iff {f g : M × M₂ →L[R] M₃} :
+  f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
+by { simp only [← coe_inj, linear_map.prod_ext_iff], refl }
+
+@[ext] lemma prod_ext {f g : M × M₂ →L[R] M₃} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
+  (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=
+prod_ext_iff.2 ⟨hl, hr⟩
+
 variables [has_continuous_add M₂]
 
 instance : semimodule S (M →L[R] M₂) :=
@@ -803,12 +818,13 @@ instance : semimodule S (M →L[R] M₂) :=
   add_smul  := λ _ _ _, ext $ λ _, add_smul _ _ _,
   smul_add  := λ _ _ _, ext $ λ _, smul_add _ _ _ }
 
-/-- `continuous_linear_map.prod` as an `equiv`. -/
-@[simps apply] def prod_equiv : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ (M →L[R] M₂ × M₃) :=
-{ to_fun := λ f, f.1.prod f.2,
-  inv_fun := λ f, ⟨(fst _ _ _).comp f, (snd _ _ _).comp f⟩,
-  left_inv := λ f, by ext; refl,
-  right_inv := λ f, by ext; refl }
+variables (S) [has_continuous_add M₃]
+
+/-- `continuous_linear_map.prod` as a `linear_equiv`. -/
+@[simps apply] def prodₗ : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ₗ[S] (M →L[R] M₂ × M₃) :=
+{ map_add' := λ f g, rfl,
+  map_smul' := λ c f, rfl,
+  .. prod_equiv }
 
 lemma prod_ext_iff {f g : M × M₂ →L[R] M₃} :
   f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
@@ -961,9 +977,12 @@ lemma coe_injective : function.injective (coe : (M ≃L[R] M₂) → (M →L[R] 
 coe_injective.eq_iff
 
 /-- A continuous linear equivalence induces a homeomorphism. -/
-def to_homeomorph (e : M ≃L[R] M₂) : M ≃ₜ M₂ := { ..e }
+def to_homeomorph (e : M ≃L[R] M₂) : M ≃ₜ M₂ := { to_equiv := e.to_linear_equiv.to_equiv, ..e }
 
 @[simp] lemma coe_to_homeomorph (e : M ≃L[R] M₂) : ⇑e.to_homeomorph = e := rfl
+
+lemma image_closure (e : M ≃L[R] M₂) (s : set M) : e '' closure s = closure (e '' s) :=
+e.to_homeomorph.image_closure s
 
 -- Make some straightforward lemmas available to `simp`.
 @[simp] lemma map_zero (e : M ≃L[R] M₂) : e (0 : M) = 0 := (e : M →L[R] M₂).map_zero
@@ -1106,6 +1125,9 @@ e.to_linear_equiv.eq_symm_apply
 
 protected lemma image_eq_preimage (e : M ≃L[R] M₂) (s : set M) : e '' s = e.symm ⁻¹' s :=
 e.to_linear_equiv.to_equiv.image_eq_preimage s
+
+protected lemma image_symm_eq_preimage (e : M ≃L[R] M₂) (s : set M₂) : e.symm '' s = e ⁻¹' s :=
+by rw [e.symm.image_eq_preimage, e.symm_symm]
 
 /-- Create a `continuous_linear_equiv` from two `continuous_linear_map`s that are
 inverse of each other. -/
