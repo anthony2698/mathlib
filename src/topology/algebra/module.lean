@@ -826,22 +826,6 @@ variables (S) [has_continuous_add M₃]
   map_smul' := λ c f, rfl,
   .. prod_equiv }
 
-lemma prod_ext_iff {f g : M × M₂ →L[R] M₃} :
-  f = g ↔ f.comp (inl _ _ _) = g.comp (inl _ _ _) ∧ f.comp (inr _ _ _) = g.comp (inr _ _ _) :=
-by { simp only [← coe_inj, linear_map.prod_ext_iff], refl }
-
-@[ext] lemma prod_ext {f g : M × M₂ →L[R] M₃} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
-  (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=
-prod_ext_iff.2 ⟨hl, hr⟩
-
-variables (S) [has_continuous_add M₃]
-
-/-- `continuous_linear_map.prod` as a `linear_equiv`. -/
-@[simps apply] def prodₗ : ((M →L[R] M₂) × (M →L[R] M₃)) ≃ₗ[S] (M →L[R] M₂ × M₃) :=
-{ map_add' := λ f g, rfl,
-  map_smul' := λ c f, rfl,
-  .. prod_equiv }
-
 end smul
 
 section smul_rightₗ

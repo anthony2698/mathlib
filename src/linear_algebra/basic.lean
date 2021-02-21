@@ -85,12 +85,6 @@ by { ext, simp }
 
 end
 
-/-- Decomposing `x : ι → R` as a sum along the canonical basis, `pi.single` version -/
-lemma finset.univ_sum_smul_single_one {I R : Type*} [fintype I] [decidable_eq I] [semiring R]
-  (f : I → R) :
-  ∑ i, f i • pi.single i (1 : R) = f :=
-by simp only [pi.smul_single_one, finset.univ_sum_single f]
-
 /-! ### Properties of linear maps -/
 namespace linear_map
 
@@ -248,17 +242,6 @@ begin
 end
 
 end
-
-/-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
-of the canonical basis, `pi.single version. -/
-lemma pi_apply_eq_sum_univ_smul_single_one [fintype ι] [decidable_eq ι] (f : (ι → R) →ₗ[R] M)
-  (x : ι → R) :
-  f x = ∑ i, x i • f (pi.single i (1 : R)) :=
-begin
-  conv_lhs { rw [← finset.univ_sum_smul_single_one x, f.map_sum] },
-  simp only [f.map_smul]
-end
-
 
 end add_comm_monoid
 

@@ -117,17 +117,6 @@ instance semimodule (α) {r : semiring α} {m : ∀ i, add_comm_monoid $ f i}
 
 variables {I f}
 
-lemma single_smul {R} [decidable_eq I] [semiring R] [Π i, add_comm_monoid (f i)]
-  [Π i, semimodule R (f i)] (c : R) (i : I) (x : f i) :
-  single i (c • x) = c • single i x :=
-function.update_eq_iff.2
-  ⟨by rw [smul_apply, single_eq_same],
-   λ j hj, by rw [smul_apply, single_eq_of_ne hj, zero_apply, smul_zero]⟩
-
-lemma smul_single_one {R} [decidable_eq I] [semiring R] (c : R) (i : I) :
-  c • single i (1 : R) = single i c :=
-by rw [← single_smul c i (1 : R), smul_eq_mul, mul_one]
-
 instance semimodule' {g : I → Type*} {r : Π i, semiring (f i)} {m : Π i, add_comm_monoid (g i)}
   [Π i, semimodule (f i) (g i)] :
   semimodule (Π i, f i) (Π i, g i) :=
