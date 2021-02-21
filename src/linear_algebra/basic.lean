@@ -194,6 +194,10 @@ lemma sum_apply (t : finset ι) (f : ι → M →ₗ[R] M₂) (b : M) :
   (∑ d in t, f d) b = ∑ d in t, f d b :=
 (t.sum_hom (λ g : M →ₗ[R] M₂, g b)).symm
 
+@[simp] lemma coe_sum (t : finset ι) (f : ι → M →ₗ[R] M₂) :
+  ⇑(∑ d in t, f d) = ∑ d in t, f d :=
+funext $ λ b, by simp only [sum_apply, finset.sum_apply]
+
 section smul_right
 
 variables {S : Type*} [semiring S] [semimodule R S] [semimodule S M] [is_scalar_tower R S M]
