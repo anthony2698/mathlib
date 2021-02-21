@@ -30,13 +30,18 @@ begin
   rcases submodule.exists_le_ker_of_lt_top _
     (lt_top_iff_ne_top.2 $ hextr.range_ne_top_of_has_strict_fderiv_at hf' hφ') with ⟨Λ', h0, hΛ'⟩,
   set e : ((F →ₗ[ℝ] ℝ) × ℝ) ≃ₗ[ℝ] (F × ℝ →ₗ[ℝ] ℝ) :=
-    ((linear_equiv.refl _ _).prod (linear_map.ring_dom_equiv ℝ).symm).trans
+    ((linear_equiv.refl ℝ (F →ₗ[ℝ] ℝ)).prod (linear_map.ring_lmap_equiv_self ℝ ℝ ℝ).symm).trans
       (linear_map.coprod_equiv ℝ),
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩,
   refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, _⟩,
   convert linear_map.range_le_ker_iff.1 hΛ',
   ext x,
-  simp [mul_comm]
+  -- squeezed `simp [mul_comm]` to speed up elaboration
+  simp only [linear_map.coprod_equiv_apply, linear_equiv.refl_apply, linear_map.one_app,
+    linear_equiv.trans_apply, smul_eq_mul, linear_equiv.prod_apply, linear_map.smul_apply,
+    linear_map.coprod_comp_prod, linear_map.smul_right_apply,
+    linear_map.ring_lmap_equiv_self_symm_apply, continuous_linear_map.coe_prod, mul_comm,
+    continuous_linear_map.coe_coe, linear_map.add_apply, linear_map.comp_apply]
 end
 
 lemma is_local_extr_on.exists_multipliers_of_has_strict_fderiv_at {ι : Type*} [fintype ι]
@@ -52,6 +57,9 @@ begin
   rcases hextr.exists_linear_map_of_has_strict_fderiv_at
     (has_strict_fderiv_at_pi.2 (λ i, hf' i)) hφ'
     with ⟨Λ, Λ₀, h0, hsum⟩,
+  rw [continuous_linear_map.coe_pi] at hsum,
+  set e : (ι → ℝ) ≃ₗ[ℝ] ((ι → ℝ) →ₗ[ℝ] ℝ) :=
+    (linear_equiv.pi _).trans _,
   refine ⟨λ i, Λ (pi.single i 1), Λ₀, _, _⟩,
   { simpa only [@linear_map.pi_ext'_iff ℝ ι _ (λ _, ℝ) _ _ _ ℝ, linear_map.ext_ring_iff,
       linear_map.coe_std_basis, function.funext_iff, ne.def, prod.mk_eq_zero,

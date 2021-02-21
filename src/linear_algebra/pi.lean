@@ -182,3 +182,7 @@ end
 end
 
 end linear_map
+
+namespace linear_equiv
+
+end linear_equiv
