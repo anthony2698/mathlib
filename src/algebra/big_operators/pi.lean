@@ -53,23 +53,15 @@ variables [Π i, add_comm_monoid (Z i)]
 -- As we only defined `single` into `add_monoid`, we only prove the `finset.sum` version here.
 lemma finset.univ_sum_single [fintype I] (f : Π i, Z i) :
   ∑ i, pi.single i (f i) = f :=
-begin
-  ext a,
-  rw [finset.sum_apply, finset.sum_eq_single a],
-  { simp, },
-  { intros b _ h, simp [h.symm], },
-  { intro h, exfalso, simpa using h, },
-end
+by { ext a, simp }
 
 lemma add_monoid_hom.functions_ext [fintype I] (G : Type*)
   [add_comm_monoid G] (g h : (Π i, Z i) →+ G)
   (w : ∀ (i : I) (x : Z i), g (pi.single i x) = h (pi.single i x)) : g = h :=
 begin
   ext k,
-  rw [←finset.univ_sum_single k, add_monoid_hom.map_sum, add_monoid_hom.map_sum],
-  apply finset.sum_congr rfl,
-  intros,
-  apply w,
+  rw [← finset.univ_sum_single k, g.map_sum, h.map_sum],
+  simp only [w]
 end
 
 /-- This is used as the ext lemma instead of `add_monoid_hom.functions_ext` for reasons explained in

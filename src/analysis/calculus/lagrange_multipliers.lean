@@ -58,13 +58,9 @@ begin
     (has_strict_fderiv_at_pi.2 (λ i, hf' i)) hφ'
     with ⟨Λ, Λ₀, h0, hsum⟩,
   rw [continuous_linear_map.coe_pi] at hsum,
-  set e : (ι → ℝ) ≃ₗ[ℝ] ((ι → ℝ) →ₗ[ℝ] ℝ) :=
-    (linear_equiv.pi _).trans _,
-  refine ⟨λ i, Λ (pi.single i 1), Λ₀, _, _⟩,
-  { simpa only [@linear_map.pi_ext'_iff ℝ ι _ (λ _, ℝ) _ _ _ ℝ, linear_map.ext_ring_iff,
-      linear_map.coe_std_basis, function.funext_iff, ne.def, prod.mk_eq_zero,
-      linear_map.comp_apply] using h0 },
-  { 
-    rw [Λ.pi_apply_eq_sum_univ_smul_single_one],
-    simp only [smul_eq_mul, continuous_linear_map.coe_pi, mul_comm] }
+  rcases (linear_equiv.pi_dual ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩,
+  refine ⟨Λ, Λ₀, _, _⟩,
+  { simpa only [ne.def, prod.ext_iff, linear_equiv.map_eq_zero_iff, prod.fst_zero] using h0 },
+  { ext x,
+    simpa using linear_map.congr_fun hsum x }
 end

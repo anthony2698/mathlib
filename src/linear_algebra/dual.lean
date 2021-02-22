@@ -299,6 +299,34 @@ linear_equiv.of_bijective (eval K V) eval_ker (erange_coe)
 
 end vector_space
 
+namespace linear_equiv
+
+variables (ι R : Type*) [fintype ι] [decidable_eq ι] [comm_ring R]
+
+open_locale big_operators
+
+/-- Linear isomorphism between the dual space to `ι → R` and the space itself. -/
+@[simps] def pi_dual : module.dual R (ι → R) ≃ₗ[R] (ι → R) :=
+{ to_fun := λ f i, f (pi.single i 1),
+  inv_fun := λ f,
+  { to_fun := λ g, ∑ i, f i * g i,
+    map_add' := λ g₁ g₂, by simp only [pi.add_apply, mul_add, finset.sum_add_distrib],
+    map_smul' := λ c g, by simp only [pi.smul_apply, smul_eq_mul, finset.smul_sum, mul_left_comm] },
+  map_add' := λ f g, rfl,
+  map_smul' := λ c f, rfl,
+  left_inv := λ f,
+    begin
+      -- `ext` applies wrong lemma, `apply` fails
+      convert @linear_map.pi_ext R R ι _ (λ _, R) _ _ _ _ _ _ _ _ (λ i x, _),
+      suffices : f (pi.single i 1) * x = f (pi.single i x),
+        by simpa [pi.mul_single i _ (λ j, f (pi.single j (1 : R)))],
+      conv_rhs { rw [← mul_one x, ← smul_eq_mul, pi.single_smul, f.map_smul,
+        smul_eq_mul, mul_comm] }
+    end,
+  right_inv := λ f, funext $ λ i, by simp [pi.mul_single] }
+
+end linear_equiv
+
 section dual_pair
 
 open vector_space module module.dual linear_map function

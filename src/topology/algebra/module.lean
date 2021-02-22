@@ -383,7 +383,7 @@ instance : add_comm_monoid (M →L[R] M₂) :=
 by { refine {zero := 0, add := (+), ..}; intros; ext;
   apply_rules [zero_add, add_assoc, add_zero, add_left_neg, add_comm] }
 
-lemma sum_apply {ι : Type*} (t : finset ι) (f : ι → M →L[R] M₂) (b : M) :
+@[simp] lemma sum_apply {ι : Type*} (t : finset ι) (f : ι → M →L[R] M₂) (b : M) :
   (∑ d in t, f d) b = ∑ d in t, f d b :=
 begin
   haveI : is_add_monoid_hom (λ (g : M →L[R] M₂), g b) :=
