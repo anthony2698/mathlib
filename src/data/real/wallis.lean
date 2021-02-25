@@ -35,7 +35,8 @@ begin
   { simp only [neg_mul_eq_neg_mul_symm, sin_zero, sin_pi, zero_mul, sub_zero,
       add_eq_zero_iff, ne.def, zero_add, not_false_iff, one_ne_zero, interval_integral.integral_neg,
       and_false, zero_pow', sub_neg_eq_add],
-    have h₂ : (λ x, cos x * (cos x * (n + 1) * sin x ^ n)) = (λ x, (n + 1) * (cos x ^ 2 * sin x ^ n)) :=
+    have h₂ : (λ x, cos x * (cos x * (n + 1) * sin x ^ n)) =
+        (λ x, (n + 1) * (cos x ^ 2 * sin x ^ n)) :=
       by { funext, ring },
     rw h₂,
     simp only [cos_square', sub_mul, mul_sub, one_mul, ← pow_add _ 2 n, add_comm 2 n],
@@ -117,7 +118,8 @@ begin
     set.compl_inter_self, measure_empty],
 end
 
-lemma integral_sin_pow_anti_mono (n : ℕ) : ∫ (x : ℝ) in 0..π, sin x ^ (n + 1) ≤ ∫ (x : ℝ) in 0..π, sin x ^ n :=
+lemma integral_sin_pow_anti_mono (n : ℕ) :
+  ∫ (x : ℝ) in 0..π, sin x ^ (n + 1) ≤ ∫ (x : ℝ) in 0..π, sin x ^ n :=
 begin
   apply interval_integral.integral_mono,
   exact (((continuous_pow (n + 1)).comp continuous_sin).interval_integrable 0 π).1.integrable,
@@ -160,7 +162,8 @@ begin
   norm_cast, linarith,
 end
 
-lemma ratio_tendsto_one : tendsto (λ (k : ℕ), integral_sin_nth (2 * k + 1) / integral_sin_nth (2 * k)) at_top (𝓝 1) :=
+lemma ratio_tendsto_one :
+  tendsto (λ (k : ℕ), integral_sin_nth (2 * k + 1) / integral_sin_nth (2 * k)) at_top (𝓝 1) :=
 begin
   have h₃ : ∀ n, integral_sin_nth (2 * n + 1) / integral_sin_nth (2 * n) ≤ 1 :=
   begin
@@ -235,12 +238,15 @@ begin
   have := tendsto.const_mul (π / 2) h,
   simp only [← mul_assoc, cancel π 2 (by { norm_num, exact pi_ne_zero }), one_mul, mul_one] at this,
   exact this,
-  have h : (λ (k : ℕ), (2:ℝ) / π * ∏ (i : ℕ) in range k, ((2 * i + 2) / (2 * i + 1)) * ((2 * i + 2) / (2 * i + 3))) =
-  λ k, (2 * ∏ i in range k, (2 * i + 2) / (2 * i + 3)) / (π * ∏ (i : ℕ) in range k, (2 * i + 1) / (2 * i + 2)) :=
+  have h : (λ (k : ℕ), (2:ℝ) / π * ∏ (i : ℕ) in range k,
+    ((2 * i + 2) / (2 * i + 1)) * ((2 * i + 2) / (2 * i + 3))) =
+  λ k, (2 * ∏ i in range k,
+    (2 * i + 2) / (2 * i + 3)) / (π * ∏ (i : ℕ) in range k, (2 * i + 1) / (2 * i + 2)) :=
   begin
     funext,
     rw prod_mul_distrib,
-    have bonk : ∏ (i : ℕ) in range k, ((2:ℝ) * ↑i + 2) / (2 * ↑i + 1) = 1 / (∏ (i : ℕ) in range k, (2 * ↑i + 1) / (2 * ↑i + 2)) :=
+    have bonk : ∏ (i : ℕ) in range k, ((2:ℝ) * ↑i + 2) / (2 * ↑i + 1) =
+      1 / (∏ (i : ℕ) in range k, (2 * ↑i + 1) / (2 * ↑i + 2)) :=
     begin
       rw eq_div_iff_mul_eq,
       rw ← prod_mul_distrib,
