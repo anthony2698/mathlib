@@ -292,14 +292,6 @@ linear_equiv.of_bijective (eval K V) eval_ker (erange_coe)
 
 end vector_space
 
-namespace linear_equiv
-
-variables (ι R : Type*) [fintype ι] [decidable_eq ι] [comm_ring R]
-
-open_locale big_operators
-
-end linear_equiv
-
 section dual_pair
 
 open vector_space module module.dual linear_map function
