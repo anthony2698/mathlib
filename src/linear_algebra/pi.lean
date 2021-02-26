@@ -27,10 +27,10 @@ universes u v w x y z u' v' w' y'
 variables {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
 variables {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
 
-namespace linear_map
-
 open function submodule
 open_locale big_operators
+
+namespace linear_map
 
 universe i
 variables [semiring R] [add_comm_monoid M₂] [semimodule R M₂] [add_comm_monoid M₃] [semimodule R M₃]
@@ -201,7 +201,7 @@ variables [semiring R] {φ ψ : ι → Type*} [∀i, add_comm_monoid (φ i)] [�
   left_inv := λ f, by { ext, simp },
   right_inv := λ f, by { ext, simp } }
 
-variables (M) (S : Type*) [fintype ι] [decidable_eq ι] [semiring S]
+variables (ι R M) (S : Type*) [fintype ι] [decidable_eq ι] [semiring S]
   [add_comm_monoid M] [semimodule R M] [semimodule S M] [smul_comm_class R S M]
 
 /-- Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
@@ -214,5 +214,15 @@ See note [bundled maps over different rings]. -/
 def pi_ring : ((ι → R) →ₗ[R] M) ≃ₗ[S] (ι → M) :=
 (linear_map.lsum R (λ i : ι, R) S).symm.trans
   (pi $ λ i, linear_map.ring_lmap_equiv_self R M S)
+
+variables {ι R M}
+
+@[simp] lemma pi_ring_apply (f : (ι → R) →ₗ[R] M) (i : ι) :
+  pi_ring R M ι S f i = f (pi.single i 1) :=
+rfl
+
+@[simp] lemma pi_ring_symm_apply (f : ι → M) (g : ι → R) :
+  (pi_ring R M ι S).symm f g = ∑ i, g i • f i :=
+by simp [pi_ring, linear_map.lsum]
 
 end linear_equiv

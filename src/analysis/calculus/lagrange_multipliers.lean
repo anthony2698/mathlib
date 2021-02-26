@@ -96,11 +96,10 @@ begin
   rcases hextr.exists_linear_map_of_has_strict_fderiv_at
     (has_strict_fderiv_at_pi.2 (λ i, hf' i)) hφ'
     with ⟨Λ, Λ₀, h0, hsum⟩,
-  rcases (linear_equiv.pi_dual ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩,
+  rcases (linear_equiv.pi_ring ℝ ℝ ι ℝ).symm.surjective Λ with ⟨Λ, rfl⟩,
   refine ⟨Λ, Λ₀, _, _⟩,
   { simpa only [ne.def, prod.ext_iff, linear_equiv.map_eq_zero_iff, prod.fst_zero] using h0 },
-  { ext x,
-    simpa [continuous_linear_map.sum_apply] using hsum x }
+  { ext x, simpa [mul_comm] using hsum x }
 end
 
 /-- Lagrange multipliers theorem. Let `f : ι → E → ℝ` be a finite family of functions.
