@@ -86,7 +86,8 @@ variables {M : Type*} [fintype α] [comm_monoid M]
 @[simp, to_additive]
 lemma fintype.prod_option (f : option α → M) : ∏ i, f i = f none * ∏ i, f (some i) :=
 show ((finset.insert_none _).1.map f).prod = _,
-by simp only [finset.prod, finset.insert_none, multiset.map_cons, multiset.prod_cons, multiset.map_map]
+by simp only [finset.prod, finset.insert_none, multiset.map_cons, multiset.prod_cons,
+  multiset.map_map]
 
 variable [decidable_eq α]
 
